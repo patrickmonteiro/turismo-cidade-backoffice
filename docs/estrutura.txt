@@ -1,0 +1,115 @@
+// Workspace represents the whitelabel tenant information.
+type Workspace struct {
+	ID           string    `json:"id"`
+	IBGEID       string    `json:"ibgeId"`
+	Name         string    `json:"name"`
+	Title        string    `json:"title"`
+	About        string    `json:"about"`
+	Description  string    `json:"description"`
+	LogoURL      string    `json:"logoUrl"`
+	ColorPalette []string  `json:"colorPalette"`
+	HeroImages   []string  `json:"heroImages"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+}
+
+// User represents administrators or authors inside a workspace.
+type User struct {
+	ID           string    `json:"id"`
+	WorkspaceID  string    `json:"workspaceId"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"-"`
+	Role         string    `json:"role"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+}
+
+// Category groups events under a workspace.
+type Category struct {
+	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId"`
+	UserID      string    `json:"userId"`
+	Status      string    `json:"status"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+// Event contains promotional pushes for visitors.
+type Event struct {
+	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId"`
+	UserID      string    `json:"userId"`
+	CategoryID  string    `json:"categoryId"`
+	Status      string    `json:"status"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Message     string    `json:"message"`
+	StartAt     time.Time `json:"startAt"`
+	EndAt       time.Time `json:"endAt"`
+	Banners     []string  `json:"banners"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+// TouristSpot represents highlighted touristic points.
+type TouristSpot struct {
+	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId"`
+	UserID      string    `json:"userId"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Address     string    `json:"address"`
+	Lat         float64   `json:"lat"`
+	Long        float64   `json:"long"`
+	Banners     []string  `json:"banners"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+// Place models local establishments.
+type Place struct {
+	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Address     string    `json:"address"`
+	Lat         float64   `json:"lat"`
+	Long        float64   `json:"long"`
+	Number      string    `json:"number"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+// UsefulPhone stores emergency contact information.
+type UsefulPhone struct {
+	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Number      string    `json:"number"`
+	SocialLinks []string  `json:"socialLinks"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+// Billing tracks workspace billing settings.
+type Billing struct {
+	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId"`
+	Currency    string    `json:"currency"`
+	Amount      int64     `json:"amount"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+// Voucher represents discount codes.
+type Voucher struct {
+	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId"`
+	Code        string    `json:"code"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
