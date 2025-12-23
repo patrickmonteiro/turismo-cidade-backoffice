@@ -5,7 +5,7 @@
         <!-- Lado Esquerdo - Logo (Desktop) -->
         <div class="col-12 col-md-6 bg-primary flex flex-center">
           <div class="q-pa-xl text-center">
-            <q-img src="/logo-transparency.png" style="max-width: 400px; width: 100%" />
+            <q-img src="/logo.png" style="max-width: 400px; width: 100%; border-radius: 50%;" />
             <div class="text-h4 text-white q-mt-lg">Turismo Cidade</div>
             <div class="text-subtitle1 text-white">Backoffice</div>
           </div>
@@ -17,35 +17,21 @@
             <div class="text-h5 q-mb-md text-center">Entrar</div>
 
             <q-form @submit="onSubmit" class="q-gutter-md">
-              <q-input
-                v-model="form.login"
-                label="Login *"
-                outlined
-                lazy-rules
-                :rules="[(val) => (val && val.length > 0) || 'Campo obrigatório']"
-              >
+              <q-input v-model="form.login" label="Login *" outlined lazy-rules
+                :rules="[(val) => (val && val.length > 0) || 'Campo obrigatório']">
                 <template v-slot:prepend>
                   <q-icon name="person" />
                 </template>
               </q-input>
 
-              <q-input
-                v-model="form.password"
-                label="Senha *"
-                :type="isPwd ? 'password' : 'text'"
-                outlined
-                lazy-rules
-                :rules="[(val) => (val && val.length > 0) || 'Campo obrigatório']"
-              >
+              <q-input v-model="form.password" label="Senha *" :type="isPwd ? 'password' : 'text'" outlined lazy-rules
+                :rules="[(val) => (val && val.length > 0) || 'Campo obrigatório']">
                 <template v-slot:prepend>
                   <q-icon name="lock" />
                 </template>
                 <template v-slot:append>
-                  <q-icon
-                    :name="isPwd ? 'visibility_off' : 'visibility'"
-                    class="cursor-pointer"
-                    @click="isPwd = !isPwd"
-                  />
+                  <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
+                    @click="isPwd = !isPwd" />
                 </template>
               </q-input>
 
@@ -54,13 +40,7 @@
                 <q-btn flat color="primary" label="Esqueceu a senha?" size="sm" />
               </div>
 
-              <q-btn
-                label="Entrar"
-                type="submit"
-                color="primary"
-                class="full-width"
-                size="lg"
-              />
+              <q-btn label="Entrar" type="submit" color="primary" class="full-width" size="lg" />
             </q-form>
           </div>
         </div>
