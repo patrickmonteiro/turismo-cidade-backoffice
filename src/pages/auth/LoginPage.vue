@@ -17,7 +17,7 @@
             <div class="text-h5 q-mb-md text-center">Entrar</div>
 
             <q-form @submit="onSubmit" class="q-gutter-md">
-              <q-input v-model="form.login" label="Login *" outlined lazy-rules
+              <q-input v-model="form.email" label="E-mail *" type="email" outlined lazy-rules
                 :rules="[(val) => (val && val.length > 0) || 'Campo obrigatório']">
                 <template v-slot:prepend>
                   <q-icon name="person" />
@@ -40,7 +40,7 @@
                 <q-btn flat color="primary" label="Esqueceu a senha?" size="sm" />
               </div>
 
-              <q-btn label="Entrar" type="submit" color="primary" class="full-width" size="lg" />
+              <q-btn label="Entrar" type="submit" color="primary" class="full-width" size="lg" :loading="loading" />
             </q-form>
           </div>
         </div>
@@ -51,38 +51,71 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
+import { authService } from 'src/services/authService';
+import { useAuth } from 'src/composables/useAuth';
 
 interface LoginForm {
-  login: string;
+  email: string;
   password: string;
+  workspaceId: string;
 }
 
 const router = useRouter();
+const route = useRoute();
 const $q = useQuasar();
+const { setToken, setWorkspaceId } = useAuth();
 
 const form = ref<LoginForm>({
-  login: '',
-  password: '',
+  email: 'patrick@gmail.com',
+  password: '@@Patrick@@',
+  workspaceId: 'f1fa780d-0ef5-4de1-9953-8d1164809c92'
 });
 
 const isPwd = ref(true);
 const rememberMe = ref(false);
+const loading = ref(false);
 
-function onSubmit() {
-  // Aqui você faria a chamada para API de autenticação
-  console.log('Login:', form.value);
-  console.log('Remember me:', rememberMe.value);
+async function onSubmit() {
+  try {
+    loading.value = true;
 
-  $q.notify({
-    color: 'positive',
-    message: 'Login realizado com sucesso!',
-    icon: 'check',
-  });
+    // Chamada para API de autenticação
+    const response = await authService.login({
+      email: form.value.email,
+      password: form.value.password,
+      workspaceId: form.value.workspaceId
+    });
 
-  // Redirecionar para home
-  void router.push('/');
+    // Armazena o token nos cookies
+    if (response.token) {
+      setToken(response.token);
+    }
+
+    // Se houver workspaceId na resposta, armazena
+    if (response.workspaceId) {
+      setWorkspaceId(response.workspaceId);
+    }
+
+    $q.notify({
+      color: 'positive',
+      message: 'Login realizado com sucesso!',
+      icon: 'check',
+    });
+
+    // Redirecionar para a página anterior ou home
+    const redirect = (route.query.redirect as string) || '/';
+    void router.push(redirect);
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      message: typeof error === 'string' ? error : 'Erro ao fazer login. Verifique suas credenciais.',
+      icon: 'warning',
+    });
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 

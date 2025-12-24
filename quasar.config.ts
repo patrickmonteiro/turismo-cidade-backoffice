@@ -97,7 +97,10 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
-      // https: true,
+      https: {
+        key: './cert/localhost+2-key.pem',
+        cert: './cert/localhost+2.pem',
+      },
       open: true, // opens browser window automatically
     },
 
@@ -116,7 +119,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify', 'Dialog', 'Loading', 'Cookies'],
     },
 
     // animations: 'all', // --- includes all animations

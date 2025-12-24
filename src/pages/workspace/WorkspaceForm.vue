@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div class="q-pa-md" style="max-width: 800px; margin: 0 auto">
-      <h4 class="q-mt-none q-mb-md">Cadastro de Workspace</h4>
+      <h4 class="q-mt-none q-mb-md">{{ isEditMode ? 'Editar Workspace' : 'Cadastro de Workspace' }}</h4>
 
       <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
         <q-input
@@ -239,8 +239,8 @@
         </div>
 
         <div class="q-mt-md">
-          <q-btn label="Salvar" type="submit" color="primary" />
-          <q-btn label="Limpar" type="reset" color="primary" flat class="q-ml-sm" />
+          <q-btn label="Salvar" type="submit" color="primary" :loading="loading" />
+          <q-btn label="Limpar" type="reset" color="primary" flat class="q-ml-sm" :disable="loading" />
         </div>
       </q-form>
     </div>
@@ -248,9 +248,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
+import { workspaceService } from 'src/services/workspaceService';
 
 interface WorkspaceForm {
   ibgeId: string;
@@ -258,11 +259,17 @@ interface WorkspaceForm {
   title: string;
   about: string;
   description: string;
+  logoUrl?: string;
   colorPalette: string[];
+  heroImages?: string[];
 }
 
 const router = useRouter();
+const route = useRoute();
 const $q = useQuasar();
+
+const workspaceId = computed(() => route.params.id as string | undefined);
+const isEditMode = computed(() => !!workspaceId.value);
 
 const form = ref<WorkspaceForm>({
   ibgeId: '',
@@ -270,8 +277,12 @@ const form = ref<WorkspaceForm>({
   title: '',
   about: '',
   description: '',
+  logoUrl: '',
   colorPalette: ['#1a5278'],
+  heroImages: [],
 });
+
+const loading = ref(false);
 
 function addColor() {
   form.value.colorPalette.push('#000000');
@@ -289,18 +300,51 @@ function onFileRejected() {
   });
 }
 
-function onSubmit() {
-  $q.notify({
-    color: 'positive',
-    message: 'Workspace cadastrado com sucesso!',
-    icon: 'check',
-  });
+async function onSubmit() {
+  try {
+    loading.value = true;
 
-  // Aqui você faria upload dos arquivos e chamada para API
-  console.log('Form data:', form.value);
+    // TODO: Implementar upload de arquivos (logo e heroImages) antes de criar/atualizar o workspace
+    // Por enquanto, vamos criar/atualizar o workspace sem as imagens
 
-  // Redirecionar para lista
-  void router.push('/workspaces');
+    const payload = {
+      ibgeId: form.value.ibgeId,
+      name: form.value.name,
+      title: form.value.title,
+      about: form.value.about,
+      description: form.value.description,
+      logoUrl: form.value.logoUrl || '',
+      colorPalette: form.value.colorPalette,
+      heroImages: form.value.heroImages || [],
+    };
+
+    if (isEditMode.value && workspaceId.value) {
+      await workspaceService.update(workspaceId.value, payload);
+      $q.notify({
+        color: 'positive',
+        message: 'Workspace atualizado com sucesso!',
+        icon: 'check',
+      });
+    } else {
+      await workspaceService.create(payload);
+      $q.notify({
+        color: 'positive',
+        message: 'Workspace cadastrado com sucesso!',
+        icon: 'check',
+      });
+    }
+
+    // Redirecionar para lista
+    void router.push('/workspaces');
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      message: typeof error === 'string' ? error : isEditMode.value ? 'Erro ao atualizar workspace' : 'Erro ao cadastrar workspace',
+      icon: 'warning',
+    });
+  } finally {
+    loading.value = false;
+  }
 }
 
 function onReset() {
@@ -310,7 +354,42 @@ function onReset() {
     title: '',
     about: '',
     description: '',
+    logoUrl: '',
     colorPalette: ['#1a5278'],
+    heroImages: [],
   };
 }
+
+async function loadWorkspace() {
+  if (!workspaceId.value) return;
+
+  try {
+    loading.value = true;
+    const workspace = await workspaceService.getById(workspaceId.value);
+
+    form.value = {
+      ibgeId: workspace.ibgeId || '',
+      name: workspace.name || '',
+      title: workspace.title || '',
+      about: workspace.about || '',
+      description: workspace.description || '',
+      logoUrl: workspace.logoUrl || '',
+      colorPalette: workspace.colorPalette || ['#1a5278'],
+      heroImages: workspace.heroImages || [],
+    };
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      message: typeof error === 'string' ? error : 'Erro ao carregar workspace',
+      icon: 'warning',
+    });
+    void router.push('/workspaces');
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(() => {
+  void loadWorkspace();
+});
 </script>

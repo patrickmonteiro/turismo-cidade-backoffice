@@ -6,6 +6,7 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
+import { useAuth } from 'src/composables/useAuth';
 
 /*
  * If not building with SSR mode, you can
@@ -31,6 +32,24 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  // Navigation Guard para autenticação
+  Router.beforeEach((to, from, next) => {
+    const { isAuthenticated } = useAuth();
+
+    // Verifica se a rota requer autenticação
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+    if (requiresAuth && !isAuthenticated.value) {
+      // Redireciona para login se não estiver autenticado
+      next({ path: '/login', query: { redirect: to.fullPath } });
+    } else if (to.path === '/login' && isAuthenticated.value) {
+      // Se já está autenticado e tenta acessar login, redireciona para home
+      next({ path: '/' });
+    } else {
+      next();
+    }
   });
 
   return Router;

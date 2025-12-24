@@ -3,7 +3,8 @@
     <div class="q-pa-md">
       <h4 class="q-mt-none q-mb-md">Workspaces</h4>
 
-      <q-table :rows="workspaces" :columns="columns" row-key="id" flat bordered :loading="loading">
+      <q-table :rows="workspaces" :columns="columns" row-key="id" flat bordered :loading="loading"
+        @row-click="onRowClick" class="cursor-pointer">
         <template v-slot:body-cell-colorPalette="props">
           <q-td :props="props">
             <div class="row q-gutter-xs">
@@ -46,8 +47,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
 import type { QTableColumn } from 'quasar';
+import { workspaceService } from 'src/services/workspaceService';
+
+const router = useRouter();
 
 interface Workspace {
   id: string;
@@ -62,6 +68,8 @@ interface Workspace {
   createdAt: string;
   updatedAt: string;
 }
+
+const $q = useQuasar();
 
 const columns: QTableColumn[] = [
   {
@@ -141,9 +149,33 @@ const columns: QTableColumn[] = [
 const workspaces = ref<Workspace[]>([]);
 const loading = ref(false);
 
+async function loadWorkspaces() {
+  try {
+    loading.value = true;
+    const response = await workspaceService.getAll();
+    workspaces.value = Array.isArray(response) ? response : [];
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      message: typeof error === 'string' ? error : 'Erro ao carregar workspaces',
+      icon: 'warning',
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
 function formatDate(date: string): string {
   return new Date(date).toLocaleString('pt-BR');
 }
+
+function onRowClick(_evt: Event, row: Workspace) {
+  void router.push(`/workspaces/${row.id}`);
+}
+
+onMounted(() => {
+  void loadWorkspaces();
+});
 </script>
 
 <style scoped>

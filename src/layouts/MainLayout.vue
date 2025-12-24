@@ -6,7 +6,9 @@
 
         <q-toolbar-title> Turismo Cidade </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn flat round icon="logout" @click="handleLogout">
+          <q-tooltip>Sair</q-tooltip>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
@@ -34,6 +36,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
+import { useAuth } from 'src/composables/useAuth';
 
 interface MenuRoute {
   path: string;
@@ -41,6 +46,10 @@ interface MenuRoute {
   caption: string;
   icon: string;
 }
+
+const router = useRouter();
+const $q = useQuasar();
+const { clearAuth } = useAuth();
 
 const menuRoutes: MenuRoute[] = [
   {
@@ -67,5 +76,22 @@ const leftDrawerOpen = ref(false);
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
+function handleLogout() {
+  $q.dialog({
+    title: 'Confirmar',
+    message: 'Deseja realmente sair?',
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    clearAuth();
+    $q.notify({
+      color: 'positive',
+      message: 'Logout realizado com sucesso!',
+      icon: 'check',
+    });
+    void router.push('/login');
+  });
 }
 </script>
