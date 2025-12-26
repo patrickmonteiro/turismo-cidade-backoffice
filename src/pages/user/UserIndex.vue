@@ -6,17 +6,17 @@
         <div class="row items-center justify-between">
           <div>
             <h4 class="q-my-none text-white">
-              <q-icon name="language" size="sm" class="q-mr-sm" />
-              Workspaces
+              <q-icon name="people" size="sm" class="q-mr-sm" />
+              Usuários
             </h4>
             <p class="q-mb-none q-mt-sm text-white" style="opacity: 0.9;">
-              Gerencie seus destinos turísticos e suas configurações
+              Gerencie usuários e suas permissões de acesso
             </p>
           </div>
           <q-btn
-            to="/workspaces/novo"
-            label="Novo Workspace"
-            icon="add_location"
+            to="/users/novo"
+            label="Novo Usuário"
+            icon="person_add"
             color="white"
             text-color="primary"
             unelevated
@@ -26,7 +26,7 @@
       </div>
 
       <q-table
-        :rows="workspaces"
+        :rows="users"
         :columns="columns"
         row-key="id"
         flat
@@ -41,55 +41,45 @@
           <div class="col-12 col-sm-6">
             <q-card class="card-tourism card-hover q-mb-md" @click="onRowClick($event, props.row)">
               <q-card-section>
-                <!-- Logo e Nome -->
+                <!-- Avatar e Nome -->
                 <div class="row items-center q-mb-md">
-                  <q-avatar size="60px" class="q-mr-md">
-                    <q-img v-if="props.row.logoUrl" :src="props.row.logoUrl" />
-                    <q-icon v-else name="language" size="lg" color="primary" />
+                  <q-avatar size="60px" color="primary" text-color="white" class="q-mr-md">
+                    <div class="text-h5">{{ props.row.name.charAt(0).toUpperCase() }}</div>
                   </q-avatar>
                   <div class="col">
                     <div class="text-h6 text-weight-bold">{{ props.row.name }}</div>
-                    <div class="text-caption text-grey-7">{{ props.row.title }}</div>
+                    <div class="text-caption text-grey-7">{{ props.row.email }}</div>
                   </div>
                 </div>
 
                 <!-- Info -->
                 <q-separator class="q-my-sm" />
 
-                <div class="q-gutter-xs">
+                <div class="q-gutter-sm">
+                  <!-- Função -->
+                  <div class="row items-center justify-between">
+                    <span class="text-caption text-grey-7">Função:</span>
+                    <q-badge :color="getRoleColor(props.row.role)" class="q-px-md">
+                      {{ getRoleLabel(props.row.role) }}
+                    </q-badge>
+                  </div>
+
+                  <!-- Workspace ID -->
                   <div class="row items-center">
-                    <q-icon name="fingerprint" size="xs" class="q-mr-xs" color="grey-6" />
-                    <span class="text-caption text-grey-7">IBGE:</span>
-                    <span class="text-caption text-weight-medium q-ml-xs">{{ props.row.ibgeId }}</span>
+                    <q-icon name="business" size="xs" class="q-mr-xs" color="grey-6" />
+                    <span class="text-caption text-grey-7">Workspace:</span>
+                    <span class="text-caption text-weight-medium q-ml-xs ellipsis">
+                      {{ props.row.workspaceId }}
+                    </span>
                   </div>
 
-                  <div v-if="props.row.about" class="q-mt-sm">
-                    <div class="text-caption text-grey-7">Sobre:</div>
-                    <div class="text-body2">{{ props.row.about }}</div>
-                  </div>
-
-                  <!-- Paleta de Cores -->
-                  <div v-if="props.row.colorPalette && props.row.colorPalette.length" class="q-mt-sm">
-                    <div class="text-caption text-grey-7 q-mb-xs">Cores:</div>
-                    <div class="row q-gutter-xs">
-                      <div v-for="(color, index) in props.row.colorPalette" :key="index"
-                        :style="{ backgroundColor: color }" class="color-box" />
-                    </div>
-                  </div>
-
-                  <!-- Hero Images -->
-                  <div v-if="props.row.heroImages && props.row.heroImages.length" class="q-mt-sm">
-                    <div class="text-caption text-grey-7 q-mb-xs">Imagens:</div>
-                    <div class="row q-gutter-xs">
-                      <q-img v-for="(image, index) in props.row.heroImages.slice(0, 3)" :key="index"
-                        :src="image" style="height: 50px; width: 70px" class="rounded-borders" />
-                    </div>
-                  </div>
-
-                  <!-- Data -->
-                  <div class="row items-center q-mt-sm">
+                  <!-- Data de Criação -->
+                  <div class="row items-center">
                     <q-icon name="schedule" size="xs" class="q-mr-xs" color="grey-6" />
-                    <span class="text-caption text-grey-7">{{ formatDate(props.row.createdAt) }}</span>
+                    <span class="text-caption text-grey-7">Criado em:</span>
+                    <span class="text-caption text-weight-medium q-ml-xs">
+                      {{ formatDate(props.row.createdAt) }}
+                    </span>
                   </div>
                 </div>
 
@@ -130,28 +120,11 @@
           </q-td>
         </template>
 
-        <template v-slot:body-cell-colorPalette="props">
+        <template v-slot:body-cell-role="props">
           <q-td :props="props">
-            <div class="row q-gutter-xs">
-              <div v-for="(color, index) in props.row.colorPalette" :key="index" :style="{ backgroundColor: color }"
-                class="color-box" />
-            </div>
-          </q-td>
-        </template>
-
-        <template v-slot:body-cell-heroImages="props">
-          <q-td :props="props">
-            <div class="row q-gutter-xs">
-              <q-img v-for="(image, index) in props.row.heroImages" :key="index" :src="image"
-                style="height: 40px; width: 60px" class="rounded-borders" />
-            </div>
-          </q-td>
-        </template>
-
-        <template v-slot:body-cell-logoUrl="props">
-          <q-td :props="props">
-            <q-img v-if="props.row.logoUrl" :src="props.row.logoUrl" style="height: 40px; width: 40px"
-              class="rounded-borders" />
+            <q-badge :color="getRoleColor(props.row.role)">
+              {{ getRoleLabel(props.row.role) }}
+            </q-badge>
           </q-td>
         </template>
 
@@ -176,20 +149,16 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar, copyToClipboard } from 'quasar';
 import type { QTableColumn } from 'quasar';
-import { workspaceService } from 'src/services/workspaceService';
+import { userService } from 'src/services/userService';
 
 const router = useRouter();
 
-interface Workspace {
+interface User {
   id: string;
-  ibgeId: string;
+  workspaceId: string;
   name: string;
-  title: string;
-  about: string;
-  description: string;
-  logoUrl: string;
-  colorPalette: string[];
-  heroImages: string[];
+  email: string;
+  role: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -205,13 +174,6 @@ const columns: QTableColumn[] = [
     sortable: true,
   },
   {
-    name: 'ibgeId',
-    label: 'IBGE ID',
-    field: 'ibgeId',
-    align: 'left',
-    sortable: true,
-  },
-  {
     name: 'name',
     label: 'Nome',
     field: 'name',
@@ -219,41 +181,18 @@ const columns: QTableColumn[] = [
     sortable: true,
   },
   {
-    name: 'title',
-    label: 'Título',
-    field: 'title',
+    name: 'email',
+    label: 'E-mail',
+    field: 'email',
     align: 'left',
     sortable: true,
   },
   {
-    name: 'about',
-    label: 'Sobre',
-    field: 'about',
-    align: 'left',
-  },
-  {
-    name: 'description',
-    label: 'Descrição',
-    field: 'description',
-    align: 'left',
-  },
-  {
-    name: 'logoUrl',
-    label: 'Logo',
-    field: 'logoUrl',
+    name: 'role',
+    label: 'Função',
+    field: 'role',
     align: 'center',
-  },
-  {
-    name: 'colorPalette',
-    label: 'Paleta de Cores',
-    field: 'colorPalette',
-    align: 'left',
-  },
-  {
-    name: 'heroImages',
-    label: 'Imagens Hero',
-    field: 'heroImages',
-    align: 'left',
+    sortable: true,
   },
   {
     name: 'createdAt',
@@ -271,18 +210,18 @@ const columns: QTableColumn[] = [
   },
 ];
 
-const workspaces = ref<Workspace[]>([]);
+const users = ref<User[]>([]);
 const loading = ref(false);
 
-async function loadWorkspaces() {
+async function loadUsers() {
   try {
     loading.value = true;
-    const response = await workspaceService.getAll();
-    workspaces.value = Array.isArray(response) ? response : [];
+    const response = await userService.getAll();
+    users.value = Array.isArray(response) ? response : [];
   } catch (error) {
     $q.notify({
       color: 'negative',
-      message: typeof error === 'string' ? error : 'Erro ao carregar workspaces',
+      message: typeof error === 'string' ? error : 'Erro ao carregar usuários',
       icon: 'warning',
     });
   } finally {
@@ -294,8 +233,26 @@ function formatDate(date: string): string {
   return new Date(date).toLocaleString('pt-BR');
 }
 
-function onRowClick(_evt: Event, row: Workspace) {
-  void router.push(`/workspaces/${row.id}`);
+function getRoleColor(role: string): string {
+  const colors: Record<string, string> = {
+    admin: 'red',
+    manager: 'orange',
+    user: 'blue',
+  };
+  return colors[role] || 'grey';
+}
+
+function getRoleLabel(role: string): string {
+  const labels: Record<string, string> = {
+    admin: 'Administrador',
+    manager: 'Gerente',
+    user: 'Usuário',
+  };
+  return labels[role] || role;
+}
+
+function onRowClick(_evt: Event, row: User) {
+  void router.push(`/users/${row.id}`);
 }
 
 async function copyUuid(uuid: string) {
@@ -319,15 +276,12 @@ async function copyUuid(uuid: string) {
 }
 
 onMounted(() => {
-  void loadWorkspaces();
+  void loadUsers();
 });
 </script>
 
 <style scoped>
-.color-box {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

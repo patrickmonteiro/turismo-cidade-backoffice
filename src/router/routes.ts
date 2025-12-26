@@ -31,6 +31,21 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/workspace/WorkspaceForm.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'users',
+        component: () => import('pages/user/UserIndex.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'users/novo',
+        component: () => import('pages/user/UserForm.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'users/:id',
+        component: () => import('pages/user/UserForm.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
 
