@@ -224,9 +224,20 @@ body {
   }
 
   &.q-field--focused {
-    .q-field__control::after {
-      background: linear-gradient(90deg, #1a5278 0%, #26bec9 100%);
+    .q-field__control {
+      &::after {
+        border-color: #26bec9;
+      }
     }
+
+    .q-field__label {
+      color: #1a5278;
+    }
+  }
+
+  // Garantir que o texto do input seja sempre visível
+  input, textarea, .q-field__native {
+    color: #1d1d1d !important;
   }
 }
 
