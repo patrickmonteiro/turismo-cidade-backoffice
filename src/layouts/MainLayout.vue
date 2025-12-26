@@ -55,10 +55,10 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above :width="280" :breakpoint="1024">
       <!-- Drawer Header -->
-      <div class="q-pa-md text-center gradient-primary" style="min-height: 150px; display: flex; flex-direction: column; justify-content: center;">
-        <q-avatar size="80px" class="q-mb-sm shadow-tourism-lg">
+      <div class="q-pa-md text-center gradient-primary" style="min-height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div class="drawer-logo-container q-mb-sm">
           <img src="/logo.png" alt="Logo" />
-        </q-avatar>
+        </div>
         <div class="text-white text-weight-bold text-h6">Turismo Cidade</div>
         <div class="text-white text-caption" style="opacity: 0.9;">Gestão de Destinos</div>
       </div>
@@ -192,3 +192,23 @@ function handleLogout() {
   });
 }
 </script>
+
+<style scoped>
+.drawer-logo-container {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.drawer-logo-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+</style>

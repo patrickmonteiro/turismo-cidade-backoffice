@@ -1,41 +1,18 @@
 <template>
   <q-page padding>
     <div class="q-pa-md">
-      <!-- Page Header -->
-      <div class="page-header">
-        <div class="row items-center justify-between">
-          <div>
-            <h4 class="q-my-none text-white">
-              <q-icon name="language" size="sm" class="q-mr-sm" />
-              Workspaces
-            </h4>
-            <p class="q-mb-none q-mt-sm text-white" style="opacity: 0.9;">
-              Gerencie seus destinos turísticos e suas configurações
-            </p>
-          </div>
-          <q-btn
-            to="/workspaces/novo"
-            label="Novo Workspace"
-            icon="add_location"
-            color="white"
-            text-color="primary"
-            unelevated
-            class="btn-tourism"
-          />
-        </div>
-      </div>
+      <PageHeader
+        title="Workspaces"
+        subtitle="Gerencie seus destinos turísticos e suas configurações"
+        icon="language"
+        button-label="Novo Workspace"
+        button-icon="add_location"
+        button-to="/workspaces/novo"
+      />
 
-      <q-table
-        :rows="workspaces"
-        :columns="columns"
-        row-key="id"
-        flat
-        :loading="loading"
-        @row-click="onRowClick"
-        class="cursor-pointer card-tourism"
-        :grid="$q.screen.lt.md"
-        :card-container-class="$q.screen.lt.md ? 'q-col-gutter-md' : ''"
-      >
+      <q-table :rows="workspaces" :columns="columns" row-key="id" flat :loading="loading" @row-click="onRowClick"
+        class="cursor-pointer card-tourism" :grid="$q.screen.lt.md"
+        :card-container-class="$q.screen.lt.md ? 'q-col-gutter-md' : ''">
         <!-- Grid Mode (Mobile) -->
         <template v-slot:item="props">
           <div class="col-12 col-sm-6">
@@ -81,8 +58,8 @@
                   <div v-if="props.row.heroImages && props.row.heroImages.length" class="q-mt-sm">
                     <div class="text-caption text-grey-7 q-mb-xs">Imagens:</div>
                     <div class="row q-gutter-xs">
-                      <q-img v-for="(image, index) in props.row.heroImages.slice(0, 3)" :key="index"
-                        :src="image" style="height: 50px; width: 70px" class="rounded-borders" />
+                      <q-img v-for="(image, index) in props.row.heroImages.slice(0, 3)" :key="index" :src="image"
+                        style="height: 50px; width: 70px" class="rounded-borders" />
                     </div>
                   </div>
 
@@ -96,23 +73,9 @@
                 <!-- Actions -->
                 <q-separator class="q-my-sm" />
                 <div class="row items-center justify-between">
-                  <q-btn
-                    flat
-                    dense
-                    size="sm"
-                    icon="content_copy"
-                    label="Copiar ID"
-                    color="primary"
-                    @click.stop="copyUuid(props.row.id)"
-                  />
-                  <q-btn
-                    flat
-                    dense
-                    size="sm"
-                    icon="edit"
-                    label="Editar"
-                    color="primary"
-                  />
+                  <q-btn flat dense size="sm" icon="content_copy" label="Copiar ID" color="primary"
+                    @click.stop="copyUuid(props.row.id)" />
+                  <q-btn flat dense size="sm" icon="edit" label="Editar" color="primary" />
                 </div>
               </q-card-section>
             </q-card>
@@ -177,6 +140,7 @@ import { useRouter } from 'vue-router';
 import { useQuasar, copyToClipboard } from 'quasar';
 import type { QTableColumn } from 'quasar';
 import { workspaceService } from 'src/services/workspaceService';
+import PageHeader from 'src/components/PageHeader.vue';
 
 const router = useRouter();
 
@@ -226,33 +190,9 @@ const columns: QTableColumn[] = [
     sortable: true,
   },
   {
-    name: 'about',
-    label: 'Sobre',
-    field: 'about',
-    align: 'left',
-  },
-  {
-    name: 'description',
-    label: 'Descrição',
-    field: 'description',
-    align: 'left',
-  },
-  {
-    name: 'logoUrl',
-    label: 'Logo',
-    field: 'logoUrl',
-    align: 'center',
-  },
-  {
     name: 'colorPalette',
     label: 'Paleta de Cores',
     field: 'colorPalette',
-    align: 'left',
-  },
-  {
-    name: 'heroImages',
-    label: 'Imagens Hero',
-    field: 'heroImages',
     align: 'left',
   },
   {
